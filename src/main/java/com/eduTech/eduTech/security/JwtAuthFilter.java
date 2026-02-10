@@ -40,13 +40,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 email,
                                 null,
-                                List.of(() -> "ROLE_" + role)
+                                List.of(() -> "ROLE_" + role)   // ⭐ VERY IMPORTANT
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
             }catch(Exception e){
-                // token invalid
+                // invalid token ignore
             }
         }
 
