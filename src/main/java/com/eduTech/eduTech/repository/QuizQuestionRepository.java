@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long> {
 
-    List<QuizQuestion> findByClassId(Long classId);
+    List<QuizQuestion> findByClassEntityId(Long classId);
 
-    List<QuizQuestion> findByClassIdAndSubjectId(Long classId, Long subjectId);
+    List<QuizQuestion> findByClassEntityIdAndSubjectId(Long classId, Long subjectId);
 
     List<QuizQuestion> findByQuestionTextContainingIgnoreCase(String keyword);
 }

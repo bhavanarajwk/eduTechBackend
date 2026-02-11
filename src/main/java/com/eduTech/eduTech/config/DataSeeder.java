@@ -112,32 +112,32 @@ public class DataSeeder implements CommandLineRunner {
                 }
 
                 // 6. Ensure Sample Quiz Exists
-                if (questionRepository.findByClassId(classEntity.getId()).isEmpty()) {
+                if (questionRepository.findByClassEntityId(classEntity.getId()).isEmpty()) {
                     System.out.println("⚠️ No Quiz Questions found. Creating 'Math Quiz'...");
 
                     QuizQuestion question = new QuizQuestion();
                     question.setQuestionText("What is 2 + 2?");
-                    question.setClassId(classEntity.getId());
-                    question.setSubjectId(mathSubject.getId());
+                    question.setClassEntity(classEntity);
+                    question.setSubject(mathSubject);
                     question.setCreatedAt(LocalDateTime.now());
                     QuizQuestion savedQ = questionRepository.save(question);
                     System.out.println("✅ Created Question: " + savedQ.getQuestionText() + " for Subject: Math");
 
                     // Options
                     QuizOption opt1 = new QuizOption();
-                    opt1.setQuestionId(savedQ.getId());
+                    opt1.setQuestion(savedQ);
                     opt1.setOptionText("3");
                     opt1.setIsCorrect(false);
                     optionRepository.save(opt1);
 
                     QuizOption opt2 = new QuizOption();
-                    opt2.setQuestionId(savedQ.getId());
+                    opt2.setQuestion(savedQ);
                     opt2.setOptionText("4");
                     opt2.setIsCorrect(true);
                     optionRepository.save(opt2);
 
                     QuizOption opt3 = new QuizOption();
-                    opt3.setQuestionId(savedQ.getId());
+                    opt3.setQuestion(savedQ);
                     opt3.setOptionText("5");
                     opt3.setIsCorrect(false);
                     optionRepository.save(opt3);

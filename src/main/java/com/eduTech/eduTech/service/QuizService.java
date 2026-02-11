@@ -3,10 +3,14 @@ package com.eduTech.eduTech.service;
 import com.eduTech.eduTech.dto.CreateQuizRequest;
 import com.eduTech.eduTech.dto.OptionDto;
 import com.eduTech.eduTech.dto.QuizQuestionDto;
+import com.eduTech.eduTech.entity.ClassEntity;
 import com.eduTech.eduTech.entity.QuizOption;
 import com.eduTech.eduTech.entity.QuizQuestion;
+import com.eduTech.eduTech.entity.Subject;
+import com.eduTech.eduTech.repository.ClassRepository;
 import com.eduTech.eduTech.repository.QuizOptionRepository;
 import com.eduTech.eduTech.repository.QuizQuestionRepository;
+import com.eduTech.eduTech.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,20 +24,31 @@ public class QuizService {
 
     private final QuizQuestionRepository questionRepository;
     private final QuizOptionRepository optionRepository;
+    private final ClassRepository classRepository;
+    private final SubjectRepository subjectRepository;
 
     public QuizQuestion createQuiz(CreateQuizRequest request) {
 
         QuizQuestion question = new QuizQuestion();
         question.setQuestionText(request.getQuestionText());
-        question.setClassId(request.getClassId());
-        question.setSubjectId(request.getSubjectId());
+
+        ClassEntity classEntity = classRepository.findById(request.getClassId())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+        question.setClassEntity(classEntity);
+
+        if (request.getSubjectId() != null) {
+            Subject subject = subjectRepository.findById(request.getSubjectId())
+                    .orElseThrow(() -> new RuntimeException("Subject not found"));
+            question.setSubject(subject);
+        }
+
         question.setCreatedAt(LocalDateTime.now());
 
         QuizQuestion savedQuestion = questionRepository.save(question);
 
         for (OptionDto opt : request.getOptions()) {
             QuizOption option = new QuizOption();
-            option.setQuestionId(savedQuestion.getId());
+            option.setQuestion(savedQuestion);
             option.setOptionText(opt.getOptionText());
             option.setIsCorrect(opt.getIsCorrect());
             optionRepository.save(option);
@@ -47,7 +62,7 @@ public class QuizService {
     }
 
     public List<QuizQuestion> filterByClass(Long classId) {
-        return questionRepository.findByClassId(classId);
+        return questionRepository.findByClassEntityId(classId);
     }
 
     public List<QuizQuestion> searchQuestions(String keyword) {
@@ -64,8 +79,18 @@ public class QuizService {
                 .orElseThrow(() -> new RuntimeException("Question not found"));
 
         // Update question fields
+        // Update question fields
         question.setQuestionText(request.getQuestionText());
-        question.setClassId(request.getClassId());
+
+        ClassEntity classEntity = classRepository.findById(request.getClassId())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+        question.setClassEntity(classEntity);
+
+        if (request.getSubjectId() != null) {
+            Subject subject = subjectRepository.findById(request.getSubjectId())
+                    .orElseThrow(() -> new RuntimeException("Subject not found"));
+            question.setSubject(subject);
+        }
 
         QuizQuestion updatedQuestion = questionRepository.save(question);
 
@@ -75,7 +100,7 @@ public class QuizService {
         // Add new options
         for (OptionDto opt : request.getOptions()) {
             QuizOption option = new QuizOption();
-            option.setQuestionId(updatedQuestion.getId());
+            option.setQuestion(updatedQuestion);
             option.setOptionText(opt.getOptionText());
             option.setIsCorrect(opt.getIsCorrect());
             optionRepository.save(option);
@@ -85,7 +110,7 @@ public class QuizService {
     }
 
     public List<QuizQuestionDto> getQuestionsWithOptionsForClass(Long classId) {
-        List<QuizQuestion> questions = questionRepository.findByClassId(classId);
+        List<QuizQuestion> questions = questionRepository.findByClassEntityId(classId);
         List<QuizQuestionDto> response = new ArrayList<>();
 
         for (QuizQuestion q : questions) {
@@ -94,8 +119,19 @@ public class QuizService {
             dto.setQuestionText(q.getQuestionText());
 
             // Fetch options for this question
-            List<QuizOption> options = optionRepository.findByQuestionId(q.getId());
-            dto.setOptions(options); // Note: In a real app, might want to hide 'isCorrect' field
+            // Using JPA mapping if easier, but keeping repo call for now or using
+            // q.getOptions() if LAZY/EAGER
+            // Since we defined @OneToMany(cascade=ALL), we can try q.getOptions()
+            // But let's check fetch type. Default OneToMany is LAZY. OpenInView is enabled.
+            // Let's safe bet: use repository or getter.
+            List<QuizOption> options = q.getOptions();
+            // If options is null (e.g. not initialized), might need fetch.
+            // Actually, let's Stick to ID-based query updated to Entity-based query if we
+            // didn't add mappedBy correctly.
+            // We did: @OneToMany(mappedBy = "question").
+            // So q.getOptions() should work if session is open.
+
+            dto.setOptions(options);
 
             response.add(dto);
         }
