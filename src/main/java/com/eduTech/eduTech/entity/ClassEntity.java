@@ -1,19 +1,17 @@
 package com.eduTech.eduTech.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-    @Table(name="classes")
-    @Data
-    public class ClassEntity {
+@Table(name = "classes")
+@Data
+public class ClassEntity {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        private String className;
-    }
+    private String className;
 
-
+}

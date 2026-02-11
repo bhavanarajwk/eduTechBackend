@@ -16,6 +16,8 @@ public class StudyMaterial {
     private Long id;
 
     private Long classId;
+
+
     private Long subjectId;
 
     private String title;

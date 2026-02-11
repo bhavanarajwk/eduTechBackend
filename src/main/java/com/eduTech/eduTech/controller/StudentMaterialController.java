@@ -15,7 +15,6 @@ public class StudentMaterialController {
 
     private final StudentMaterialService materialService;
 
-    // ✅ Get all materials for logged-in student's class
     @GetMapping("/all")
     public List<StudyMaterial> getAllMaterials(Authentication authentication) {
 
@@ -23,7 +22,6 @@ public class StudentMaterialController {
         return materialService.getAllMaterials(email);
     }
 
-    // ✅ Get materials by subject
     @GetMapping("/subject")
     public List<StudyMaterial> getBySubject(
             Authentication authentication,
@@ -33,7 +31,6 @@ public class StudentMaterialController {
         return materialService.getBySubject(email, subjectId);
     }
 
-    // ✅ Search materials by keyword
     @GetMapping("/search")
     public List<StudyMaterial> search(
             Authentication authentication,
@@ -42,4 +39,5 @@ public class StudentMaterialController {
         String email = authentication.getName();
         return materialService.search(email, keyword);
     }
+
 }

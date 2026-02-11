@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,46 +29,49 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        try {
 
-        // If no token → continue request
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            String authHeader = request.getHeader("Authorization");
+            System.out.println("AUTH HEADER → " + authHeader);
 
-        // Extract token
-        String token = authHeader.substring(7);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                System.out.println("NO TOKEN FOUND");
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        // Extract username
-        String username = jwtService.extractUsername(token);
-        String role = null;
-        List<SimpleGrantedAuthority> authorities = null;
+            String token = authHeader.substring(7);
+            System.out.println("TOKEN RECEIVED → " + token);
 
+            String username = jwtService.extractUsername(token);
+            System.out.println("USERNAME FROM TOKEN → " + username);
 
-        // Only set auth if not already authenticated
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Extract all claims
-            Claims claims = jwtService.extractAllClaims(token);
+                Claims claims = jwtService.extractAllClaims(token);
+                String role = claims.get("role", String.class);
 
-            // Extract role from token
-            role = claims.get("role", String.class);
+                System.out.println("ROLE FROM TOKEN → " + role);
 
-            // Convert role → Spring authority
-            authorities = List.of(new SimpleGrantedAuthority(role));
-            System.out.println("TOKEN ROLE = " + role);
-            System.out.println("AUTHORITIES = " + authorities);
-            // Create authentication token
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            authorities
-                    );
+                List<SimpleGrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority(role));
 
-            // Set authentication in context
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                authorities
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println("AUTH SUCCESSFULLY SET");
+            }
+
+        } catch (Exception e) {
+            System.out.println("JWT FILTER ERROR → " + e.getMessage());
+            e.printStackTrace();
         }
 
         filterChain.doFilter(request, response);
