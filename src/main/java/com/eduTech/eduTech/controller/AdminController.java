@@ -1,5 +1,6 @@
 package com.eduTech.eduTech.controller;
 
+import com.eduTech.eduTech.dto.CreateStudentRequest;
 import com.eduTech.eduTech.entity.User;
 import com.eduTech.eduTech.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,11 @@ public class AdminController {
     }
 
     @PostMapping("/create-student")
-    public User createStudent(@RequestBody User user){
-        return userService.createStudent(user);
+    public User createStudent(@RequestBody CreateStudentRequest request){
+        return userService.createStudent(request);
     }
+
+
 
     @DeleteMapping("/{id}")
     public void deleteAdmin(@PathVariable Long id){
@@ -43,6 +46,11 @@ public class AdminController {
     public void deleteStudent(@PathVariable Long id){
         userService.deleteStudent(id);
     }
+    @GetMapping("/students/search")
+    public List<User> searchStudents(@RequestParam String name){
+        return userService.searchStudentsByName(name);
+    }
+
 
 
 }

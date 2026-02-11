@@ -15,6 +15,7 @@ public class BootstrapController {
     @PostMapping("/signup")
     public User signup(@RequestBody User user){
 
+        // ✅ ENUM SAFE
         user.setRole(Role.ADMIN);
 
         return userRepository.save(user);

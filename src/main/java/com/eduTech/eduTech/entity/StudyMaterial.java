@@ -2,6 +2,7 @@ package com.eduTech.eduTech.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,10 @@ public class StudyMaterial {
     private Long subjectId;
     private Long classId;
 
+
     private LocalDateTime uploadDate;
+
+    public void setFileName(@Nullable String originalFilename) {
+    }
 }
 

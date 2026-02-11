@@ -1,5 +1,7 @@
 package com.eduTech.eduTech.controller;
 
+import com.eduTech.eduTech.dto.CreateSubjectRequest;
+import com.eduTech.eduTech.dto.UploadMaterialRequest;
 import com.eduTech.eduTech.entity.StudyMaterial;
 import com.eduTech.eduTech.entity.Subject;
 import com.eduTech.eduTech.service.SyllabusService;
@@ -15,32 +17,44 @@ public class SyllabusController {
 
     private final SyllabusService syllabusService;
 
+    // ✅ ADD SUBJECT
     @PostMapping("/subject")
-    public Subject addSubject(@RequestBody Subject subject){
-        return syllabusService.addSubject(subject);
+    public Subject addSubject(@RequestBody CreateSubjectRequest request){
+        return syllabusService.addSubject(request);
     }
 
-    @PostMapping("/material")
-    public StudyMaterial uploadMaterial(@RequestBody StudyMaterial material){
-        return syllabusService.uploadMaterial(material);
+    // ✅ GET SUBJECTS BY CLASS
+    @GetMapping("/subjects/class/{classId}")
+    public List<Subject> getSubjectsByClass(@PathVariable Long classId){
+        return syllabusService.getSubjectsByClass(classId);
     }
 
+    // ✅ UPLOAD MATERIAL (FILE UPLOAD)
+    @PostMapping("/material/upload")
+    public StudyMaterial uploadMaterial(@ModelAttribute UploadMaterialRequest request){
+        return syllabusService.uploadMaterial(request);
+    }
+
+    // ✅ GET MATERIALS BY CLASS
     @GetMapping("/materials/class/{classId}")
     public List<StudyMaterial> getMaterials(@PathVariable Long classId){
         return syllabusService.getMaterialsByClass(classId);
     }
 
+    // ✅ UPDATE MATERIAL
     @PutMapping("/material/{id}")
     public StudyMaterial updateMaterial(@PathVariable Long id,
-                                        @RequestBody StudyMaterial material){
-        return syllabusService.updateMaterial(id, material);
+                                        @ModelAttribute UploadMaterialRequest request){
+        return syllabusService.updateMaterial(id, request);
     }
 
+    // ✅ DELETE MATERIAL
     @DeleteMapping("/material/{id}")
     public void deleteMaterial(@PathVariable Long id){
         syllabusService.deleteMaterial(id);
     }
 
+    // ✅ SEARCH MATERIAL
     @GetMapping("/search")
     public List<StudyMaterial> searchMaterial(@RequestParam String keyword){
         return syllabusService.searchMaterial(keyword);

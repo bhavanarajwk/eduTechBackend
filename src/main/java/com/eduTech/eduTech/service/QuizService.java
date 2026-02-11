@@ -1,0 +1,58 @@
+package com.eduTech.eduTech.service;
+
+import com.eduTech.eduTech.dto.CreateQuizRequest;
+import com.eduTech.eduTech.dto.OptionDto;
+import com.eduTech.eduTech.entity.QuizOption;
+import com.eduTech.eduTech.entity.QuizQuestion;
+import com.eduTech.eduTech.repository.QuizOptionRepository;
+import com.eduTech.eduTech.repository.QuizQuestionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class QuizService {
+
+    private final QuizQuestionRepository questionRepository;
+    private final QuizOptionRepository optionRepository;
+
+    public QuizQuestion createQuiz(CreateQuizRequest request){
+
+        QuizQuestion question = new QuizQuestion();
+        question.setQuestionText(request.getQuestionText());
+        question.setClassId(request.getClassId());
+        question.setCreatedAt(LocalDateTime.now());
+
+        QuizQuestion savedQuestion = questionRepository.save(question);
+
+        for(OptionDto opt : request.getOptions()){
+            QuizOption option = new QuizOption();
+            option.setQuestionId(savedQuestion.getId());
+            option.setOptionText(opt.getOptionText());
+            option.setIsCorrect(opt.getIsCorrect());
+            optionRepository.save(option);
+        }
+
+        return savedQuestion;
+    }
+
+    public
+    List<QuizQuestion> getAllQuestions(){
+        return questionRepository.findAll();
+    }
+
+    public List<QuizQuestion> filterByClass(Long classId){
+        return questionRepository.findByClassId(classId);
+    }
+
+    public List<QuizQuestion> searchQuestions(String keyword){
+        return questionRepository.findByQuestionTextContainingIgnoreCase(keyword);
+    }
+
+    public void deleteQuestion(Long id){
+        questionRepository.deleteById(id);
+    }
+}
