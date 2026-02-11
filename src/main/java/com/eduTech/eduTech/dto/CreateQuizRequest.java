@@ -11,6 +11,7 @@ public class CreateQuizRequest {
 
     private Long classId;
 
+    private Long subjectId;
+
     private List<OptionDto> options;
 }
-

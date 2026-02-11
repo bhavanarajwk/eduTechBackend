@@ -118,9 +118,10 @@ public class DataSeeder implements CommandLineRunner {
                     QuizQuestion question = new QuizQuestion();
                     question.setQuestionText("What is 2 + 2?");
                     question.setClassId(classEntity.getId());
+                    question.setSubjectId(mathSubject.getId());
                     question.setCreatedAt(LocalDateTime.now());
                     QuizQuestion savedQ = questionRepository.save(question);
-                    System.out.println("✅ Created Question: " + savedQ.getQuestionText());
+                    System.out.println("✅ Created Question: " + savedQ.getQuestionText() + " for Subject: Math");
 
                     // Options
                     QuizOption opt1 = new QuizOption();

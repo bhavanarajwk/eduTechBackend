@@ -26,6 +26,7 @@ public class QuizService {
         QuizQuestion question = new QuizQuestion();
         question.setQuestionText(request.getQuestionText());
         question.setClassId(request.getClassId());
+        question.setSubjectId(request.getSubjectId());
         question.setCreatedAt(LocalDateTime.now());
 
         QuizQuestion savedQuestion = questionRepository.save(question);

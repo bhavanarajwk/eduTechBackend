@@ -18,6 +18,7 @@ public class QuizQuestion {
 
     private Long classId;
 
+    private Long subjectId;
+
     private LocalDateTime createdAt;
 }
-
