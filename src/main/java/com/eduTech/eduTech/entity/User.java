@@ -28,6 +28,6 @@ public class User {
     private Role role;
 
     public String getStudentClass() {
-        return null;
+        return className;
     }
 }

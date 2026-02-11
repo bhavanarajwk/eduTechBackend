@@ -19,54 +19,57 @@ public class StudentMaterialService {
     private final StudyMaterialRepository materialRepository;
     private final ClassRepository classRepository;
 
+    // ✅ GET ALL MATERIALS
     public List<StudyMaterial> getAllMaterials(String email){
 
         User student = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ClassEntity classEntity = classRepository
-                .findByClassName(student.getStudentClass());
-
-        if(classEntity == null){
-            throw new RuntimeException("Class not found");
+        if(student.getClassName() == null){
+            throw new RuntimeException("Student class is not assigned");
         }
 
-        Long classId = classEntity.getId();
+        ClassEntity classEntity = classRepository
+                .findByClassName(student.getClassName())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
-        return materialRepository.findByClassId(classId);
+        return materialRepository.findByClassId(classEntity.getId());
     }
 
+
+    // ✅ GET MATERIALS BY SUBJECT
     public List<StudyMaterial> getBySubject(String email, Long subjectId){
 
         User student = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        ClassEntity classEntity = classRepository
-                .findByClassName(student.getStudentClass());
-
-        if(classEntity == null){
-            throw new RuntimeException("Class not found");
+        if(student.getStudentClass() == null){
+            throw new RuntimeException("Student class is not assigned");
         }
 
-        Long classId = classEntity.getId();
+        ClassEntity classEntity = classRepository
+                .findByClassName(student.getStudentClass())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
-        return materialRepository.findByClassIdAndSubjectId(classId, subjectId);
+        return materialRepository
+                .findByClassIdAndSubjectId(classEntity.getId(), subjectId);
     }
 
+
+    // ✅ SEARCH MATERIALS
     public List<StudyMaterial> search(String email, String keyword){
 
         User student = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        ClassEntity classEntity = classRepository
-                .findByClassName(student.getStudentClass());
-
-        if(classEntity == null){
-            throw new RuntimeException("Class not found");
+        if(student.getStudentClass() == null){
+            throw new RuntimeException("Student class is not assigned");
         }
 
-        Long classId = classEntity.getId();
+        ClassEntity classEntity = classRepository
+                .findByClassName(student.getStudentClass())
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
-        return materialRepository.searchInClass(classId, keyword);
+        return materialRepository.searchInClass(classEntity.getId(), keyword);
     }
 }

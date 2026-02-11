@@ -44,7 +44,7 @@ public class QuizController {
             @PathVariable Long id,
             @RequestBody CreateQuizRequest request) {
         return quizService.updateQuiz(id, request);
-    }
+    }//api not working
 
 }
 

@@ -12,6 +12,8 @@ public interface StudyMaterialRepository extends JpaRepository<StudyMaterial, Lo
 
     List<StudyMaterial> findByClassIdAndSubjectId(Long classId, Long subjectId);
 
+    List<StudyMaterial> findByTitleContainingIgnoreCase(String keyword);
+
     @Query("""
         SELECT m FROM StudyMaterial m
         WHERE m.classId = :classId

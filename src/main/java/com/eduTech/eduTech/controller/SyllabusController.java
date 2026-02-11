@@ -29,7 +29,7 @@ public class SyllabusController {
         return syllabusService.getSubjectsByClass(classId);
     }
 
-    // ✅ UPLOAD MATERIAL (FILE UPLOAD)
+    //  UPLOAD MATERIAL (FILE UPLOAD)
     @PostMapping("/material/upload")
     public StudyMaterial uploadMaterial(
             @ModelAttribute UploadMaterialRequest request) {
