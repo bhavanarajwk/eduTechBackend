@@ -9,13 +9,15 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
-@Component   // ⭐ VERY IMPORTANT
+@Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -28,34 +30,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        System.out.println("JWT FILTER EXECUTED");
-
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            System.out.println("AUTH HEADER: " + authHeader);
+        String token = authHeader.substring(7);
 
-            String token = authHeader.substring(7);
+        try {
 
-            try {
-                String email = jwtService.extractEmail(token);
-                String role = jwtService.extractRole(token);
+            String email = jwtService.extractEmail(token);
+            String role = jwtService.extractRole(token);
 
-                System.out.println("ROLE FROM TOKEN: " + role);
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 email,
                                 null,
-                                List.of(() -> "ROLE_" + role)
+                                List.of(new SimpleGrantedAuthority(role))
                         );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            } catch (Exception e) {
-                System.out.println("JWT ERROR: " + e.getMessage());
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
+
+        } catch (Exception e) {
+            System.out.println("JWT ERROR = " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);

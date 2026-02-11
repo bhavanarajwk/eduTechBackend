@@ -20,13 +20,13 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                // ✅ ENUM SAFE CONVERSION
-                .claim("role", user.getRole().toString())
+                .claim("role", "ROLE_" + user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60))
                 .signWith(key)
                 .compact();
     }
+
 
     // Extract email from token
     public String extractEmail(String token){
