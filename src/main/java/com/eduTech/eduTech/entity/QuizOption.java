@@ -12,7 +12,9 @@ public class QuizOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long questionId;
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private QuizQuestion question;
 
     private String optionText;
 

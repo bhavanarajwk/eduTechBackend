@@ -16,9 +16,16 @@ public class QuizQuestion {
 
     private String questionText;
 
-    private Long classId;
+    @ManyToOne
+    @JoinColumn(name = "class_id")
+    private ClassEntity classEntity;
 
-    private Long subjectId;
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private java.util.List<QuizOption> options;
 
     private LocalDateTime createdAt;
 }

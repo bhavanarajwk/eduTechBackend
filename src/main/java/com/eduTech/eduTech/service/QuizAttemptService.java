@@ -69,7 +69,7 @@ public class QuizAttemptService {
                 .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectName));
 
         // Find questions
-        List<QuizQuestion> questions = questionRepository.findByClassIdAndSubjectId(classEntity.getId(),
+        List<QuizQuestion> questions = questionRepository.findByClassEntityIdAndSubjectId(classEntity.getId(),
                 subject.getId());
 
         // Map to DTO (Duplicated logic from QuizService, but simplest for now without
