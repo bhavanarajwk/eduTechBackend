@@ -26,4 +26,8 @@ public class User {
     // ⭐ VERY IMPORTANT PART ⭐
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public String getStudentClass() {
+        return null;
+    }
 }

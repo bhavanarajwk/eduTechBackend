@@ -55,4 +55,31 @@ public class QuizService {
     public void deleteQuestion(Long id){
         questionRepository.deleteById(id);
     }
+
+    public QuizQuestion updateQuiz(Long id, CreateQuizRequest request) {
+
+        QuizQuestion question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+
+        // Update question fields
+        question.setQuestionText(request.getQuestionText());
+        question.setClassId(request.getClassId());
+
+        QuizQuestion updatedQuestion = questionRepository.save(question);
+
+        // Delete old options
+        optionRepository.deleteByQuestionId(id);
+
+        // Add new options
+        for (OptionDto opt : request.getOptions()) {
+            QuizOption option = new QuizOption();
+            option.setQuestionId(updatedQuestion.getId());
+            option.setOptionText(opt.getOptionText());
+            option.setIsCorrect(opt.getIsCorrect());
+            optionRepository.save(option);
+        }
+
+        return updatedQuestion;
+    }
+
 }
