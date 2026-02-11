@@ -1,16 +1,14 @@
 package com.eduTech.eduTech.security;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,34 +30,44 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        // If no token → continue request
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Extract token
         String token = authHeader.substring(7);
 
-        try {
+        // Extract username
+        String username = jwtService.extractUsername(token);
+        String role = null;
+        List<SimpleGrantedAuthority> authorities = null;
 
-            String email = jwtService.extractEmail(token);
-            String role = jwtService.extractRole(token);
 
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Only set auth if not already authenticated
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                List.of(new SimpleGrantedAuthority(role))
-                        );
+            // Extract all claims
+            Claims claims = jwtService.extractAllClaims(token);
 
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            // Extract role from token
+            role = claims.get("role", String.class);
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+            // Convert role → Spring authority
+            authorities = List.of(new SimpleGrantedAuthority(role));
+            System.out.println("TOKEN ROLE = " + role);
+            System.out.println("AUTHORITIES = " + authorities);
+            // Create authentication token
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            null,
+                            authorities
+                    );
 
-        } catch (Exception e) {
-            System.out.println("JWT ERROR = " + e.getMessage());
+            // Set authentication in context
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

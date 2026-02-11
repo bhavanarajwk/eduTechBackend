@@ -1,5 +1,6 @@
-package com.eduTech.eduTech.security;
+package com.eduTech.eduTech.config;
 
+import com.eduTech.eduTech.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/signup").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+
+
                         .anyRequest().authenticated()
                 )
 

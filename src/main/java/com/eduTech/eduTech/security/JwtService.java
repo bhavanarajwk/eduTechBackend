@@ -1,6 +1,7 @@
 package com.eduTech.eduTech.security;
 
 import com.eduTech.eduTech.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class JwtService {
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
+    // Generate JWT Token
     public String generateToken(User user){
 
         return Jwts.builder()
@@ -27,24 +29,27 @@ public class JwtService {
                 .compact();
     }
 
-
-    // Extract email from token
+    // Extract email (Subject)
     public String extractEmail(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
-    // Extract role from token
+    // Extract username (same as email)
+    public String extractUsername(String token){
+        return extractEmail(token);
+    }
+
+    // Extract role
     public String extractRole(String token){
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    // Extract all claims
+    public Claims extractAllClaims(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+                .getBody();
     }
 }

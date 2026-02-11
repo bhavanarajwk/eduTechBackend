@@ -39,5 +39,12 @@ public class QuizController {
     public void delete(@PathVariable Long id){
         quizService.deleteQuestion(id);
     }
+    @PutMapping("/{id}")
+    public QuizQuestion updateQuiz(
+            @PathVariable Long id,
+            @RequestBody CreateQuizRequest request) {
+        return quizService.updateQuiz(id, request);
+    }
+
 }
 
