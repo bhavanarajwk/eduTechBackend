@@ -31,31 +31,36 @@ public class SyllabusController {
 
     // ✅ UPLOAD MATERIAL (FILE UPLOAD)
     @PostMapping("/material/upload")
-    public StudyMaterial uploadMaterial(@ModelAttribute UploadMaterialRequest request){
+    public StudyMaterial uploadMaterial(
+            @ModelAttribute UploadMaterialRequest request) {
+
         return syllabusService.uploadMaterial(request);
     }
 
+
     // ✅ GET MATERIALS BY CLASS
-    @GetMapping("/materials/class/{classId}")
+    @GetMapping("/materials/class/{classId}") //based on class id
     public List<StudyMaterial> getMaterials(@PathVariable Long classId){
         return syllabusService.getMaterialsByClass(classId);
     }
 
     // ✅ UPDATE MATERIAL
     @PutMapping("/material/{id}")
-    public StudyMaterial updateMaterial(@PathVariable Long id,
-                                        @ModelAttribute UploadMaterialRequest request){
+    public StudyMaterial updateMaterial(
+            @PathVariable Long id,
+            @ModelAttribute UploadMaterialRequest request){
         return syllabusService.updateMaterial(id, request);
     }
 
+
     // ✅ DELETE MATERIAL
-    @DeleteMapping("/material/{id}")
+    @DeleteMapping("/material/{id}") //api not working
     public void deleteMaterial(@PathVariable Long id){
         syllabusService.deleteMaterial(id);
     }
 
     // ✅ SEARCH MATERIAL
-    @GetMapping("/search")
+    @GetMapping("/search") //api not working here
     public List<StudyMaterial> searchMaterial(@RequestParam String keyword){
         return syllabusService.searchMaterial(keyword);
     }

@@ -9,6 +9,5 @@ public interface StudyMaterialRepository extends JpaRepository<StudyMaterial, Lo
 
     List<StudyMaterial> findByClassId(Long classId);
 
-    List<StudyMaterial> findByTitleContaining(String keyword);
+    List<StudyMaterial> findByTitleContainingIgnoreCase(String keyword);
 }
-
