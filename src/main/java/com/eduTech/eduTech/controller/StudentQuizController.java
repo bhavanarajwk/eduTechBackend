@@ -26,4 +26,9 @@ public class StudentQuizController {
     public List<QuizQuestionDto> getQuestions(Principal principal) {
         return quizAttemptService.getQuestionsForStudent(principal.getName());
     }
+
+    @GetMapping("/search")
+    public List<QuizQuestionDto> search(@RequestParam String subject, Principal principal) {
+        return quizAttemptService.getQuestionsBySubjectName(principal.getName(), subject);
+    }
 }
