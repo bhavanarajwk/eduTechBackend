@@ -43,7 +43,7 @@ public class DataSeeder implements CommandLineRunner {
             String className = student.getStudentClass();
 
             if (className != null && !className.isEmpty()) {
-                System.out.println("✅ Found student: " + studentEmail + " with class: " + className);
+                System.out.println("Found student: " + studentEmail + " with class: " + className);
 
                 // 1. Check/Create Class
                 ClassEntity classEntity = classRepository.findByClassName(className)
@@ -60,7 +60,7 @@ public class DataSeeder implements CommandLineRunner {
                         .filter(s -> "Mathematics".equalsIgnoreCase(s.getSubjectName()))
                         .findFirst()
                         .orElseGet(() -> {
-                            System.out.println("⚠️ Subject 'Mathematics' missing. Creating...");
+                            System.out.println("Subject 'Mathematics' missing. Creating...");
                             Subject s = new Subject();
                             s.setSubjectName("Mathematics");
                             s.setClassId(classEntity.getId());
@@ -70,7 +70,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 // 3. Ensure "Algebra Basics" Material Exists for Math
                 if (materialRepository.searchInClass(classEntity.getId(), "Algebra").isEmpty()) {
-                    System.out.println("⚠️ Material 'Algebra Basics' missing. Creating...");
+                    System.out.println("Material 'Algebra Basics' missing. Creating...");
                     StudyMaterial material = new StudyMaterial();
                     material.setTitle("Algebra Basics");
                     material.setClassId(classEntity.getId());
@@ -80,7 +80,7 @@ public class DataSeeder implements CommandLineRunner {
                     material.setFilePath("/uploads/algebra.pdf");
                     material.setUploadDate(LocalDateTime.now());
                     materialRepository.save(material);
-                    System.out.println("✅ Created 'Algebra Basics' linked to Math ID: " + mathSubject.getId());
+                    System.out.println("Created 'Algebra Basics' linked to Math ID: " + mathSubject.getId());
                 }
 
                 // 4. Ensure "Science" Subject Exists
@@ -88,13 +88,13 @@ public class DataSeeder implements CommandLineRunner {
                         .filter(s -> "Science".equalsIgnoreCase(s.getSubjectName()))
                         .findFirst()
                         .orElseGet(() -> {
-                            System.out.println("⚠️ Subject 'Science' missing. Creating...");
+                            System.out.println("Subject 'Science' missing. Creating...");
                             Subject s = new Subject();
                             s.setSubjectName("Science");
                             s.setClassId(classEntity.getId());
                             return subjectRepository.save(s);
                         });
-                System.out.println("📗 Subject 'Science' ID: " + scienceSubject.getId());
+                System.out.println("Subject 'Science' ID: " + scienceSubject.getId());
 
                 // 5. Ensure "Physics Intro" Material Exists for Science
                 if (materialRepository.searchInClass(classEntity.getId(), "Physics").isEmpty()) {
