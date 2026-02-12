@@ -17,7 +17,6 @@ public class SyllabusController {
 
     private final SyllabusService syllabusService;
 
-    // ✅ ADD SUBJECT
     @PostMapping("/subject")
     public Subject addSubject(@RequestBody CreateSubjectRequest request){
         return syllabusService.addSubject(request);

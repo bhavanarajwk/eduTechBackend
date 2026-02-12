@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.List;
 
 @Configuration
@@ -25,22 +26,25 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
                 http
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Enable CORS
-                                .csrf(csrf -> csrf.disable())
+                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        .csrf(csrf -> csrf.disable())
 
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionManagement(session -> session
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/auth/**", "/error").permitAll() // ✅ Allow Auth &
-                                                                                                   // Error pages
-                                                .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT") // ✅ Ensure
-                                                                                                             // correct
-                                                                                                             // role
-                                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                                                .anyRequest().authenticated())
+                        .authorizeHttpRequests(auth -> auth
 
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                .requestMatchers("/signup").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/error").permitAll()
+
+                                .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT")
+                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+
+                                .anyRequest().authenticated()
+                        )
+
+                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }
@@ -49,7 +53,7 @@ public class SecurityConfig {
         @Bean
         public UrlBasedCorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOriginPatterns(List.of("*")); // Allow all origins (for development)
+                config.setAllowedOriginPatterns(List.of("*"));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
                 config.setAllowCredentials(true);
